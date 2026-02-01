@@ -1,11 +1,31 @@
-name: Keep web alive
+name: 10-Min Keep-Alive
+
 on:
   schedule:
-    - cron: '*/10 * * * *' # Runs every 10 minutes
-  workflow_dispatch:      # Allows you to test it manually
+    - cron: '*/10 * * * *' # Exactly every 10 minutes
+  workflow_dispatch:      # Manual trigger button
+
+permissions:
+  contents: write         # Allows the script to keep the repo "active"
+
 jobs:
-  ping:
+  ping-and-reset:
     runs-on: ubuntu-latest
     steps:
-      - name: Ping
-        run: curl -I https://dizzy-chloette-bernat-fe1a7933.koyeb.app/
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Ping Koyeb App
+        # REPLACE the URL below with your Koyeb URL once you have it
+        run: curl -I -s https://dizzy-chloette-bernat-fe1a7933.koyeb.app/
+
+      - name: Auto-Reset Activity Timer
+        # At 10-min intervals, 1008 runs = exactly 1 week.
+        if: github.event_name == 'schedule' && github.run_number % 1008 == 0
+        run: |
+          echo "Last reset: $(date)" > activity.txt
+          git config user.name "GitHub Action"
+          git config user.email "action@github.com"
+          git add activity.txt
+          git commit -m "Weekly activity reset [skip ci]"
+          git push
