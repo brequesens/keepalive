@@ -2,10 +2,11 @@ name: 10-Min Keep-Alive
 
 on:
   schedule:
-    - cron: '*/10 * * * *' # Every 10 minutes
-  workflow_dispatch:      # Manual test button
-  push:                # Add this line
-    branches: [main]   # And this line
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+
 permissions:
   contents: write
 
@@ -17,8 +18,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Ping Koyeb App
-        # Replace with your actual Koyeb URL
-        run: curl -I -s https://dizzy-chloette-bernat-fe1a7933.koyeb.app/
+        run: curl -I -s ${{ secrets.KOYEB_URL }}
 
       - name: Auto-Reset Activity Timer
         run: |
@@ -29,7 +29,6 @@ jobs:
             git add activity.txt
             git commit -m "Weekly activity reset [skip ci]"
             git push
-            echo "Activity timer reset successfully."
           else
-            echo "Ping successful. Not time for a weekly reset yet (Run #${{ github.run_number }})."
+            echo "Ping successful. Not time for a weekly reset yet."
           fi
