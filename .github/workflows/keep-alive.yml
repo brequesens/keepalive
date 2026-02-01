@@ -1,7 +1,7 @@
 name: Wake Up Koyeb
 on:
   schedule:
-    - cron: '*/15 * * * *' # Runs every 15 minutes
+    - cron: '*/25 * * * *' # Runs every 25 minutes
   workflow_dispatch:      # Allows you to test it manually
 jobs:
   ping:
